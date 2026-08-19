@@ -4,7 +4,7 @@
  * Generates human-auditable explanations of solver decisions
  */
 
-import { DecisionTrace, Constraint, State } from '../core/types';
+import { DecisionTrace, Constraint, TerminationReason } from '../core/types';
 
 /**
  * Trace builder for constructing decision traces
@@ -54,7 +54,7 @@ export class TraceBuilder {
       violatedConstraints: Array.from(this.violatedConstraints),
       relaxedConstraints: Array.from(this.relaxedConstraints),
       activeConstraints: Array.from(this.activeConstraints),
-      terminationReason: terminationReason as any,
+      terminationReason: terminationReason as TerminationReason,
       iterationCount: this.iterationCount,
       timeBudgetUsed,
     };

@@ -9,6 +9,10 @@
 import { State, Constraint, SolverResult } from '../core/types';
 import { validateState } from '../core/state';
 
+interface SolverLike {
+  solve(state: State): SolverResult;
+}
+
 /**
  * Violation report for safety failures
  */
@@ -99,7 +103,7 @@ export function verifySolverResult(
       verifyHardConstraints(result.state, constraints);
     } catch (error) {
       throw new Error(
-        `Solver result claims to be safe but violates hard constraints: ${error}`
+        `Solver result claims to be safe but violates hard constraints: ${String(error)}`
       );
     }
   }
@@ -120,10 +124,11 @@ export function verifySolverResult(
  * Run solver twice with same inputs and verify identical outputs
  */
 export function verifyDeterminism(
-  solver: any,
+  solver: SolverLike,
   state: State,
   constraints: Constraint[]
 ): boolean {
+  void constraints;
   const result1 = solver.solve(state);
   const result2 = solver.solve(state);
 

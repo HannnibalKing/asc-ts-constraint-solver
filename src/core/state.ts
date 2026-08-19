@@ -105,9 +105,9 @@ export function assertValidState(state: State): void {
  */
 export function createSafeState(dimensions: number): State {
   return {
-    position: new Array(dimensions).fill(0),
-    velocity: new Array(dimensions).fill(0),
-    acceleration: new Array(dimensions).fill(0),
+    position: new Array<number>(dimensions).fill(0),
+    velocity: new Array<number>(dimensions).fill(0),
+    acceleration: new Array<number>(dimensions).fill(0),
     timestamp: 0,
   };
 }

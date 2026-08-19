@@ -11,7 +11,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "verify": "npm run test && npm run lint",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "cert": "npm run test:coverage && npm run verify"
   },

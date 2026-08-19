@@ -183,9 +183,11 @@ if (result.infeasible) {
 
 This system is under active development and intended as a **research-grade autonomy kernel**, not a consumer product.
 
+The current implementation includes deterministic projection for built-in hard constraints and runtime state validation. Soft-constraint optimization, broader feasibility handling, and certification-level performance evidence remain unfinished.
+
 ## Safety Invariants (Non-Negotiable)
 
-1. **HARD constraints cannot be violated** – ever
+1. **Built-in HARD constraints are projected before a result is returned**; conflicting or non-projectable constraints remain an explicit limitation
 2. **Solver execution must complete within bounded time**
 3. **Every decision must be explainable**
 4. **Determinism is mandatory** – no randomness without seeded control
@@ -197,7 +199,7 @@ The system is complete when it:
 
 - ✅ Handles ≥100 constraints in real time
 - ✅ Meets sub-millisecond deadlines
-- ✅ Never violates hard constraints
+- ⏳ Proves hard-constraint safety for all supported constraint combinations
 - ✅ Produces explainable traces
 - ✅ Degrades gracefully under overload
 

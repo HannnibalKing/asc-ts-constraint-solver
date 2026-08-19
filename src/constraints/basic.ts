@@ -26,7 +26,7 @@ export class PositionBounds implements Constraint {
 
   evaluate(state: State): ConstraintResult {
     let violation = 0;
-    const gradient: number[] = new Array(state.position.length).fill(0);
+    const gradient: number[] = new Array<number>(state.position.length).fill(0);
 
     for (let i = 0; i < state.position.length; i++) {
       const x = state.position[i];
@@ -180,6 +180,22 @@ export class ObstacleAvoidance implements Constraint {
       satisfied: distance >= this.safeRadius,
       violation,
       gradient,
+    };
+  }
+
+  project(state: State): State {
+    const offset = state.position.map((x, i) => x - this.obstaclePos[i]);
+    const distance = Math.sqrt(offset.reduce((sum, value) => sum + value * value, 0));
+
+    if (distance >= this.safeRadius) return state;
+
+    const direction = distance === 0
+      ? state.position.map((_, index) => index === 0 ? 1 : 0)
+      : offset.map(value => value / distance);
+
+    return {
+      ...state,
+      position: this.obstaclePos.map((value, i) => value + direction[i] * this.safeRadius),
     };
   }
 }

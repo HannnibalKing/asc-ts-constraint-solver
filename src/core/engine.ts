@@ -13,6 +13,7 @@ import {
   SolverResult,
   DecisionTrace,
   TerminationReason,
+  ConstraintResult,
 } from './types';
 import { validateState, cloneState } from './state';
 
@@ -97,7 +98,7 @@ export class ConstraintSolver {
       // Check if all hard constraints are satisfied
       if (this.areHardConstraintsSatisfied(violations)) {
         // Optimize soft constraints
-        state = this.optimizeSoftConstraints(state, violations);
+        state = this.optimizeSoftConstraints(state);
 
         // Check convergence
         if (this.hasConverged(violations)) {
@@ -105,7 +106,7 @@ export class ConstraintSolver {
         }
       } else {
         // Enforce hard constraints
-        state = this.enforceHardConstraints(state, violations);
+        state = this.enforceHardConstraints(state);
       }
     }
 
@@ -116,8 +117,8 @@ export class ConstraintSolver {
   /**
    * Evaluate all constraints
    */
-  private evaluateConstraints(state: State): Map<string, { constraint: Constraint; result: any }> {
-    const violations = new Map();
+  private evaluateConstraints(state: State): Map<string, { constraint: Constraint; result: ConstraintResult }> {
+    const violations = new Map<string, { constraint: Constraint; result: ConstraintResult }>();
 
     for (const constraint of this.constraints) {
       const result = constraint.evaluate(state);
@@ -130,7 +131,9 @@ export class ConstraintSolver {
   /**
    * Check if all hard constraints are satisfied
    */
-  private areHardConstraintsSatisfied(violations: Map<string, any>): boolean {
+  private areHardConstraintsSatisfied(
+    violations: Map<string, { constraint: Constraint; result: ConstraintResult }>
+  ): boolean {
     for (const [, { constraint, result }] of violations) {
       if (constraint.kind === 'HARD' && !result.satisfied) {
         return false;
@@ -144,10 +147,15 @@ export class ConstraintSolver {
    * 
    * STUB: To be implemented by Solver AI
    */
-  private enforceHardConstraints(state: State, violations: Map<string, any>): State {
-    // TODO: Implement hard constraint projection
-    // For now, return unchanged state
-    return state;
+  private enforceHardConstraints(state: State): State {
+    let projectedState = state;
+
+    for (const constraint of this.constraints) {
+      if (constraint.kind !== 'HARD' || !constraint.project) continue;
+      projectedState = constraint.project(projectedState);
+    }
+
+    return projectedState;
   }
 
   /**
@@ -155,7 +163,7 @@ export class ConstraintSolver {
    * 
    * STUB: To be implemented by Solver AI
    */
-  private optimizeSoftConstraints(state: State, violations: Map<string, any>): State {
+  private optimizeSoftConstraints(state: State): State {
     // TODO: Implement soft constraint optimization
     // For now, return unchanged state
     return state;
@@ -164,7 +172,9 @@ export class ConstraintSolver {
   /**
    * Check if solver has converged
    */
-  private hasConverged(violations: Map<string, any>): boolean {
+  private hasConverged(
+    violations: Map<string, { constraint: Constraint; result: ConstraintResult }>
+  ): boolean {
     const tolerance = this.config.tolerance!;
     let totalViolation = 0;
 
